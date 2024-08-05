@@ -1,0 +1,35 @@
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: ${{GOOGLE_PROJECT_ID}}
+  CLUSTER: golang-app-cluster
+  CLUSTER_ZONE: asia-southeast2
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_KEY }}'
+
+    - id: 'get-credentials'
+      uses: 'google-github-actions/get-gke-credentials@v2'
+      with:
+        cluster_name: ${{env.CLUSTER}}
+        location: ${{env.CLUSTER_ZONE}}
+
+    - name: Deploy
+      run: |-
+        kubectl apply -f deploy.yml
+        kubectl get pods    
