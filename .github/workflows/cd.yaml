@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  PROJECT_ID: ${{GOOGLE_PROJECT_ID}}
+  PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
   CLUSTER: golang-app-cluster
   CLUSTER_ZONE: asia-southeast2
 
@@ -31,5 +31,4 @@ jobs:
 
     - name: Deploy
       run: |-
-        kubectl apply -f deploy.yml
-        kubectl get pods    
+        kubectl version
