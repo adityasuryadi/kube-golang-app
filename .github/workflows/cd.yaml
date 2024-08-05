@@ -32,4 +32,5 @@ jobs:
     - name: Deploy
       run: |-
         gcloud container clusters get-credentials golang-app-cluster --region asia-southeast2 --project fit-idiom-430604-e6
+        cd gha-kubeconfig-1fac40c3edcf8b47
         ls
