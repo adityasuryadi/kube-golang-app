@@ -3,7 +3,7 @@ name: Continuous Integration
 on:
   pull_request:
     branches:
-      - main
+      - staging
 
 jobs:
   build:
@@ -20,6 +20,6 @@ jobs:
 
       - name: Push image
         run: docker push ghcr.io/adityasuryadi/golang-app:latest
-
+  
 
  
