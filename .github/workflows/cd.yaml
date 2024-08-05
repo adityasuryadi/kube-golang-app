@@ -31,4 +31,4 @@ jobs:
 
     - name: Deploy
       run: |-
-        kubectl version
+        kubectl -f apply -f ./golang-app/deployment-gke-lb.yaml
