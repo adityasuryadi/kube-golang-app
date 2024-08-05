@@ -1,0 +1,10 @@
+services:
+  app-sample:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    command: air
+    container_name: app-sample-container
+    ports:
+      - 3000:3001
+    
