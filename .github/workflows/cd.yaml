@@ -32,4 +32,4 @@ jobs:
     - name: Deploy
       run: |-
         ls
-        echo ${{secrets.GOOGLE_PROJECT_ID}}
+        echo ${{ github.sha }}
