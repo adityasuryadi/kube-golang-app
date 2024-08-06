@@ -17,8 +17,6 @@ jobs:
       id-token: write
       contents: read
 
-      
-
     steps:
     - uses: 'actions/checkout@v4'
 
@@ -33,7 +31,7 @@ jobs:
         cluster_name: ${{env.CLUSTER}}
         location: ${{env.CLUSTER_ZONE}}
 
-    - name: Deploy
+    - name: Deploy to GKE
       run: |-
-        ls
-        echo ${{ github.sha }}
+        sed -i -e 's/DOCKER_IMG_TAG/'${{ github.sha }}'/' ./kubernetes/deploy-gke.yaml
+        kubectl apply -f ./kubernetes/deploy-gke.yaml
