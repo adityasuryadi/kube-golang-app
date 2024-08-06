@@ -1,12 +1,15 @@
 name: Build and Deploy to GKE
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
 
 env:
-  PROJECT_ID: ${{GOOGLE_PROJECT_ID}}
+  PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
   CLUSTER: golang-app-cluster
   CLUSTER_ZONE: asia-southeast2
 
@@ -18,6 +21,8 @@ jobs:
       contents: read
 
     steps:
+    - uses: 'actions/checkout@v4'
+
     - id: 'auth'
       uses: 'google-github-actions/auth@v2'
       with:
@@ -29,7 +34,7 @@ jobs:
         cluster_name: ${{env.CLUSTER}}
         location: ${{env.CLUSTER_ZONE}}
 
-    - name: Deploy
+    - name: Deploy to GKE
       run: |-
-        kubectl apply -f deploy.yml
-        kubectl get pods    
+        sed -i -e 's/DOCKER_IMG_TAG/'${{ github.sha }}'/' ./kubernetes/deploy-gke.yaml
+        kubectl apply -f ./kubernetes/deploy-gke.yaml

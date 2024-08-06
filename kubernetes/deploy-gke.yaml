@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ghcr-secret
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJnaGNyLmlvIjp7InVzZXJuYW1lIjoiYWRpdHlhc3VyeWFkaSIsInBhc3N3b3JkIjoiZ2hwX1o1S1F0Vkx3R0RqM2hGT21lVENHSWl2UGhYMGVBVjEzdUltNyIsImVtYWlsIjoiYWRpdHlhc3VyeWFkaXR5YUBnbWFpbC5jb20ifX19
+type: kubernetes.io/dockerconfigjson
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deployment-config-map
+data:
+# # config env
+  # MODE: "dev"
+  # APP_NAME: "golang-app-dev"
+  # DEBUG: "true"
+  test.json: |
+      {
+          "maxThreadCount": 10,
+          "trackerConfigs": [{
+                  "url": "https://example1.com/",
+                  "username": "username",
+                  "password": "password",
+                  "defaultLimit": 1
+              },
+              {
+                  "url": "https://example2.com/",
+                  "username": "username",
+                  "password": "password",
+                  "defaultLimit": 1
+              }
+          ],
+          "repoConfigs": [{
+              "url": "https://github.com/",
+              "username": "username",
+              "password": "password",
+              "type": "GITHUB"
+          }],
+          "streamConfigs": [{
+              "url": "https://example.com/master.json",
+              "type": "JSON"
+          }]
+      }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-app-deployment
+  labels:
+    app: golang-app-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: golang-app
+  template:
+    metadata:
+      labels:
+        app: golang-app
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+      - name: golang-app
+        image: ghcr.io/adityasuryadi/golang-app:DOCKER_IMG_TAG
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+  # port dari app yang di gunakan di container image
+        - containerPort: 3001
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+          readOnly: true
+      volumes:
+      - name: config-volume
+        configMap:
+          name: deployment-config-map
+          # # config env
+          # items:
+          #   - key: MODE
+          #     path: MODE
+          #   - key: APP_NAME
+          #     path: APP_NAME
+          #   - key: DEBUG
+          #     path: DEBUG
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: golang-app-service
+  labels: 
+    app: golang-app-service
+spec:
+  selector:
+    app: golang-app
+  ports:
+      - port: 3002
+        targetPort: 3001
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: golang-app-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: test-network
+spec:
+  rules:
+    - host: api.adityasuryadi.my.id
+      http:
+        paths:
+        - path: /*
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: golang-app-service
+              port: 
+                number: 3001

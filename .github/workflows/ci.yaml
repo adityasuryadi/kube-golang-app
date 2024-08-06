@@ -1,7 +1,7 @@
 name: Continuous Integration
 
 on:
-  pull_request:
+  push:
     branches:
       - staging
 
@@ -16,10 +16,10 @@ jobs:
         run: echo ${{secrets.TOKEN_GITHUB}} | docker login ghcr.io -u adityasuryadi --password-stdin
 
       - name: Build image
-        run: docker build -t ghcr.io/adityasuryadi/golang-app:latest .
+        run: docker build -t ghcr.io/adityasuryadi/golang-app:${{github.sha}} .
 
       - name: Push image
-        run: docker push ghcr.io/adityasuryadi/golang-app:latest
+        run: docker push ghcr.io/adityasuryadi/golang-app:${{github.sha}}
   
 
  
