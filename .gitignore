@@ -1,2 +1,4 @@
 .env
 /tmp
+# Ignore generated kubeconfig from google-github-actions/get-gke-credentials
+gha-kubeconfig-*

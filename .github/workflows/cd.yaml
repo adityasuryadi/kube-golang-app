@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  PROJECT_ID: fit-idiom-430604-e6
+  PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
   CLUSTER: golang-app-cluster
   CLUSTER_ZONE: asia-southeast2
 
@@ -31,4 +31,4 @@ jobs:
 
     - name: Deploy
       run: |-
-        ls
+        echo ${{secrets.GOOGLE_PROJECT_ID}}
