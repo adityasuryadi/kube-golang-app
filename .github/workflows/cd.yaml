@@ -27,6 +27,7 @@ jobs:
         run: docker push ghcr.io/adityasuryadi/golang-app:${{github.sha}}
 
   deploy:
+    needs: build-and-push-image
     runs-on: ubuntu-latest
     permissions:
       id-token: write
