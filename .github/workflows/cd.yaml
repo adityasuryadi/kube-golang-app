@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
 
 env:
   PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
@@ -14,7 +11,22 @@ env:
   CLUSTER_ZONE: asia-southeast2
 
 jobs:
-  build:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login github registry
+        run: echo ${{secrets.TOKEN_GITHUB}} | docker login ghcr.io -u adityasuryadi --password-stdin
+
+      - name: Build image
+        run: docker build -t ghcr.io/adityasuryadi/golang-app:${{github.sha}} .
+
+      - name: Push image
+        run: docker push ghcr.io/adityasuryadi/golang-app:${{github.sha}}
+
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
