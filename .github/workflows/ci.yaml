@@ -9,17 +9,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Login github registry
-        run: echo ${{secrets.TOKEN_GITHUB}} | docker login ghcr.io -u adityasuryadi --password-stdin
-
-      - name: Build image
-        run: docker build -t ghcr.io/adityasuryadi/golang-app:${{github.sha}} .
-
-      - name: Push image
-        run: docker push ghcr.io/adityasuryadi/golang-app:${{github.sha}}
+      - name: testing
+        run: echo "testing"
   
 
  
